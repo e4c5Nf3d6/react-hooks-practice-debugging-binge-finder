@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Grid } from "semantic-ui-react";
 import Adapter from "../Adapter";
 import TVShowList from "./TVShowList";
 import Nav from "./Nav";
 import SelectedShowContainer from "./SelectedShowContainer";
+
+const MoreShows = React.lazy(() => import('./TVShowList'))
 
 function App() {
   const [shows, setShows] = useState([]);
@@ -13,12 +15,9 @@ function App() {
   const [filterByRating, setFilterByRating] = useState("");
 
   useEffect(() => {
-    Adapter.getShows().then((shows) => setShows(shows));
+    Adapter.getShows()
+    .then((shows) => setShows(shows));
   }, []);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  });
 
   function handleSearch(e) {
     setSearchTerm(e.target.value.toLowerCase());
@@ -37,10 +36,10 @@ function App() {
     });
   }
 
-  let displayShows = shows;
+  let displayShows = shows
   if (filterByRating) {
     displayShows = displayShows.filter((s) => {
-      s.rating.average >= filterByRating;
+      return s.rating.average >= filterByRating;
     });
   }
 
@@ -49,7 +48,7 @@ function App() {
       <Nav
         handleFilter={handleFilter}
         handleSearch={handleSearch}
-        searchTerm={searchTerm}
+        search={searchTerm}
       />
       <Grid celled>
         <Grid.Column width={5}>
